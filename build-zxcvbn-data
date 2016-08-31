@@ -1,0 +1,11 @@
+#!/bin/bash
+
+DEST="/var/zxcvbn-data"
+
+git clone https://github.com/dropbox/zxcvbn.git
+coffee -cb zxcvbn/src/frequency_lists.coffee
+nodejs -e "var frequency_lists = require('./zxcvbn/src/frequency_lists.js'); console.log( JSON.stringify( frequency_lists ) );" > $DEST/frequency_lists.json
+php -r "\$f=json_decode(file_get_contents('$DEST/frequency_lists.json'));\$r=array();foreach(\$f as \$d=>\$l){\$r[\$d]=array();foreach(\$l as \$k=>\$w){\$r[\$d][\$w]=\$k+1;}}echo json_encode(\$r);" > $DEST/ranked_frequency_lists.json
+coffee -cb zxcvbn/src/adjacency_graphs.coffee
+nodejs -e "var adjacency_graphs = require('./zxcvbn/src/adjacency_graphs.js'); console.log( JSON.stringify( adjacency_graphs ) );" > $DEST/adjacency_graphs.json
+rm -rf zxcvbn
